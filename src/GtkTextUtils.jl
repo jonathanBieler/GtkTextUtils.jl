@@ -20,7 +20,7 @@ module GtkTextUtils
         insert!(buffer,GtkTextIter(buffer,pos),str)
     end
 
-    cursor_position(b::GtkTextBuffer) = getproperty(b,:cursor_position,Int)
+    cursor_position(b::GtkTextBuffer) = get_gtk_property(b,:cursor_position,Int)
 
     get_text_iter_at_cursor(b::GtkTextBuffer) =
         GtkTextIter(b,cursor_position(b)+1) #+1 because there's a -1 in gtk.jl
@@ -71,11 +71,11 @@ module GtkTextUtils
     function get_line_text(buffer::GtkTextBuffer,it::GtkTextIter)
 
         itstart, itend = mutable(it), mutable(it)
-        li = getproperty(itstart,:line,Integer)
+        li = get_gtk_property(itstart,:line,Integer)
 
         text_iter_backward_line(itstart)#seems there's no skip to line start
-        li != getproperty(itstart,:line,Integer) && skip(itstart,1,:line)#for fist line
-        !getproperty(itend,:ends_line,Bool) && text_iter_forward_to_line_end(itend)
+        li != get_gtk_property(itstart,:line,Integer) && skip(itstart,1,:line)#for fist line
+        !get_gtk_property(itend,:ends_line,Bool) && text_iter_forward_to_line_end(itend)
 
         return (text_iter_get_text(itstart, itend), itstart, itend)
     end
@@ -120,7 +120,7 @@ module GtkTextUtils
     end
 
     function toggle_wrap_mode(v::GtkTextView)
-        wm = getproperty(v,:wrap_mode,Int)
+        wm = get_gtk_property(v,:wrap_mode,Int)
         wm = convert(Bool,wm)
         setproperty!(v,:wrap_mode,!wm)
         nothing
