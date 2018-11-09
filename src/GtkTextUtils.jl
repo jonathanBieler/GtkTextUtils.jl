@@ -14,7 +14,7 @@ module GtkTextUtils
         (found,it_start,it_end) = selection_bounds(b)
         found
     end
-    function replace_text{T<:GtkTextIters}(buffer::GtkTextBuffer,itstart::T,itend::T,str::AbstractString)
+    function replace_text(buffer::GtkTextBuffer,itstart::T,itend::T,str::AbstractString) where {T<:GtkTextIters}
         pos = offset(itstart)+1
         splice!(buffer,itstart:itend)
         insert!(buffer,GtkTextIter(buffer,pos),str)
@@ -77,7 +77,7 @@ module GtkTextUtils
         li != get_gtk_property(itstart,:line,Integer) && skip(itstart,1,:line)#for fist line
         !get_gtk_property(itend,:ends_line,Bool) && text_iter_forward_to_line_end(itend)
 
-        return (text_iter_get_text(itstart, itend), itstart, itend)
+        return ( (itstart:itend).text[String], itstart, itend)
     end
 
     function select_word_double_click(textview::GtkTextView,buffer::GtkTextBuffer,x::Integer,y::Integer)
@@ -90,21 +90,20 @@ module GtkTextUtils
         selection_bounds(buffer,iter_start,iter_end)
     end
 
-
     function get_text_right_of_cursor(buffer::GtkTextBuffer)
         it = mutable(get_text_iter_at_cursor(buffer))
-        return text_iter_get_text(it,it+1)
+        return (it:(it+1)).text[String] 
     end
     function get_text_left_of_cursor(buffer::GtkTextBuffer)
         it = mutable(get_text_iter_at_cursor(buffer))
-        return text_iter_get_text(it-1,it)
+        return ((it-1):it).text[String]
     end
 
-    get_text_left_of_iter(it::MutableGtkTextIter) = text_iter_get_text(it-1,it)
-    get_text_right_of_iter(it::MutableGtkTextIter) = text_iter_get_text(it,it+1)
+    get_text_left_of_iter(it::MutableGtkTextIter) = ((it-1):it).text[String]
+    get_text_right_of_iter(it::MutableGtkTextIter) = (it:(it+1)).text[String]
 
-    get_text_left_of_iter(it::GtkTextIter) = text_iter_get_text(mutable(it)-1,mutable(it))
-    get_text_right_of_iter(it::GtkTextIter) = text_iter_get_text(mutable(it),mutable(it)+1)
+    get_text_left_of_iter(it::GtkTextIter) = ((mutable(it)-1):mutable(it)).text[String]
+    get_text_right_of_iter(it::GtkTextIter) = (mutable(it):(mutable(it)+1)).text[String]
 
     nlines(it_start,it_end) = abs(line(it_end)-line(it_start))+1
 
