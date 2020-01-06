@@ -68,14 +68,14 @@ module GtkTextUtils
         return (txt[i:j],its,it)
     end
 
-    function get_line_text(buffer::GtkTextBuffer,it::GtkTextIter)
+    function get_line_text(buffer::GtkTextBuffer, it::GtkTextIter)
 
         itstart, itend = mutable(it), mutable(it)
-        li = get_gtk_property(itstart,:line,Integer)
+        li = get_gtk_property(itstart, :line, Integer)
 
-        text_iter_backward_line(itstart)#seems there's no skip to line start
-        li != get_gtk_property(itstart,:line,Integer) && skip(itstart,1,:line)#for fist line
-        !get_gtk_property(itend,:ends_line,Bool) && text_iter_forward_to_line_end(itend)
+        skip(itstart, :backward_line) #seems there's no skip to line start
+        li != get_gtk_property(itstart, :line, Integer) && skip(itstart, 1, :line)#for fist line
+        !get_gtk_property(itend, :ends_line, Bool) && skip(itend, :forward_to_line_end)
 
         return ( (itstart:itend).text[String], itstart, itend)
     end
@@ -87,7 +87,7 @@ module GtkTextUtils
         #iter_end = mutable( get_text_iter_at_cursor(buffer) ) #not using this because the cursor position is modified somewhere
 
         (w, iter_start, iter_end) = select_word(iter_end,buffer)
-        selection_bounds(buffer,iter_start,iter_end)
+        select_range(buffer,iter_start,iter_end)
     end
 
     function get_text_right_of_cursor(buffer::GtkTextBuffer)
@@ -109,19 +109,19 @@ module GtkTextUtils
 
     function move_cursor_to_sentence_start(buffer::GtkTextBuffer)
         it = mutable( get_text_iter_at_cursor(buffer) )
-        text_iter_backward_sentence_start(it)
-        text_buffer_place_cursor(buffer,it)
+        skip(it, :backward_sentence_start)
+        place_cursor(buffer,it)
     end
     function move_cursor_to_sentence_end(buffer::GtkTextBuffer)
         it = mutable( get_text_iter_at_cursor(buffer) )
-        text_iter_forward_sentence_end(it)
-        text_buffer_place_cursor(buffer,it)
+        skip(it, :forward_sentence_end)
+        place_cursor(buffer,it)
     end
 
     function toggle_wrap_mode(v::GtkTextView)
-        wm = get_gtk_property(v,:wrap_mode,Int)
-        wm = convert(Bool,wm)
-        setproperty!(v,:wrap_mode,!wm)
+        wm = get_gtk_property(v, :wrap_mode, Int)
+        wm = convert(Bool, wm)
+        setproperty!(v, :wrap_mode, !wm)
         nothing
     end
 
