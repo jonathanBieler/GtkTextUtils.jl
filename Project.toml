@@ -1,0 +1,18 @@
+name = "GtkTextUtils"
+uuid = "2e7e9b12-d22e-4e22-8e10-cef500861b7e"
+authors = ["Jonathan Bieler <jonathan.bieler@alumni.epfl.ch>"]
+version = "0.1.0"
+
+[deps]
+Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
+GtkExtensions = "d2dfcb8f-bd2a-5702-a3b3-89081ee1f936"
+JuliaWordsUtils = "9e42fe60-4c8f-4de3-8815-836141356991"
+
+[compat]
+julia = "1.0"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
